@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Apex Benchmark Analysis</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f5f3ee; --surface: #fcfbf8;
+    --ink: #1a1a1a; --ink-2: #46433c; --ink-3: #79746a;
+    --grid: #e3e0d6; --hairline: #c9c5ba; --frame: #1a1a1a;
+    --navy: #1f3a5f;
+    --m-gpt: #3567a8; --m-opus: #c05b2e; --m-qwen: #1f8a6e;
+    --good: #3d7a4e; --warn: #c1892f; --crit: #a8443a;
+    --seq-100:#dbe3ec; --seq-200:#c3cfdd; --seq-300:#a3b5c9; --seq-400:#8098b3; --seq-500:#5c7b9c; --seq-600:#3a5c82; --seq-700:#1f3a5f;
+    --serif: "Palatino Nova", Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--page); color: var(--ink); font: 13px/1.4 var(--serif); padding: 24px 24px 48px; }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+  h1 { font-family: var(--serif); font-size: 21px; font-weight: 600; letter-spacing: 0.01em; padding-bottom: 8px; border-bottom: 2px solid var(--frame); }
+  .sub { color: var(--ink-2); margin-top: 12px; max-width: 800px; font-style: italic; }
+  .flow { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; margin: 26px 0 8px; }
+  .flow .fbox { background: var(--surface); border: 1px solid var(--frame); padding: 12px 18px; text-align: center; min-width: 108px; }
+  .flow .fbox b { display: block; font-size: 26px; font-weight: 600; font-family: var(--serif); color: var(--navy); font-variant-numeric: tabular-nums; }
+  .flow .fbox span { display: block; font-family: var(--sans); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-3); }
+  .flow .fbox .fdet { font-size: 11px; color: var(--ink-2); margin-top: 2px; max-width: 220px; }
+  .flow .farrow { align-self: center; color: var(--ink); font-size: 18px; padding: 0 2px; }
+  .flownote { font-size: 11.5px; color: var(--ink-3); margin-bottom: 8px; font-style: italic; }
+  section { margin-top: 48px; }
+  h2 { font-family: var(--sans); font-size: 12px; font-weight: 400; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-3); display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  h2::after { content: ""; flex: 1; border-top: 1px solid var(--hairline); }
+  h3 { font-family: var(--serif); font-size: 14.5px; font-weight: 600; }
+  .lede { color: var(--ink-2); margin: 8px 0 14px; max-width: 880px; font-size: 12.5px; }
+  .takeaway { font-size: 12px; color: var(--ink-2); margin-top: 12px; border-top: 1px solid var(--grid); padding-top: 8px; }
+  .takeaway b { color: var(--ink); }
+  .card { background: var(--surface); border: 1px solid var(--frame); padding: 24px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+  .tile .mname { display: flex; align-items: center; gap: 8px; font-family: var(--sans); font-size: 9.5px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-2); }
+  .dot { width: 10px; height: 10px; flex: none; }
+  .tile .big { font-family: var(--serif); font-size: 26px; font-weight: 600; color: var(--navy); margin: 6px 0 2px; }
+  .tile .cap { font-family: var(--sans); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+  .tile .rows { margin-top: 12px; font-size: 12px; color: var(--ink-2); display: grid; gap: 4px; }
+  .tile .rows b { color: var(--ink); font-weight: 700; }
+  /* heatmap */
+  .hm { display: grid; grid-template-columns: 150px repeat(3, 1fr); gap: 3px; max-width: 720px; }
+  .hm .hlab { font-family: var(--sans); font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); display: flex; align-items: center; }
+  .hm .hcol { font-family: var(--sans); font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); text-align: center; padding-bottom: 6px; align-self: end; }
+  .hm .cell { min-height: 46px; display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-weight: 600; font-size: 14px; cursor: default; }
+  .hm-scale { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-family: var(--sans); font-size: 9.5px; color: var(--ink-3); }
+  .hm-scale .ramp { display: flex; height: 10px; overflow: hidden; width: 160px; border: 1px solid var(--hairline); }
+  .hm-scale .ramp i { flex: 1; }
+  /* matrix */
+  .mtx-dom { margin-top: 20px; }
+  .mtx-dom .dlab { font-family: var(--serif); font-size: 14.5px; font-weight: 600; margin-bottom: 6px; }
+  .mtx-row { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .mtx-row .rlab { width: 64px; font-family: var(--sans); font-size: 9px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-3); text-align: right; flex: none; }
+  .mtx-cells { display: flex; gap: 1px; flex: 1; }
+  .mtx-cells i { flex: 1; height: 24px; min-width: 3px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; font-family: var(--sans); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); margin-top: 16px; }
+  .legend .li { display: flex; align-items: center; gap: 7px; }
+  .sw { width: 11px; height: 11px; flex: none; }
+  /* bars */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+  .brow { margin-top: 18px; }
+  .brow .blab { font-size: 12.5px; display: flex; justify-content: space-between; gap: 12px; margin-bottom: 5px; }
+  .brow .blab .n { color: var(--navy); font-weight: 700; font-variant-numeric: tabular-nums; }
+  .brow .btrack { display: flex; gap: 2px; height: 15px; }
+  .brow .btrack i { height: 100%; }
+  .brow .bwhy { font-size: 11px; color: var(--ink-3); margin-top: 4px; font-style: italic; }
+  /* explorer */
+  .filters { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+  .filters select { background: var(--surface); color: var(--ink); border: 1px solid var(--frame); border-radius: 0; padding: 5px 8px; font-family: var(--sans); font-size: 11px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  thead th { text-align: left; font-family: var(--sans); font-weight: 600; color: var(--ink-2); font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; padding: 10px; border-bottom: 2px solid var(--frame); position: sticky; top: 0; background: var(--surface); }
+  tbody td { padding: 10px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  tbody tr.main { cursor: pointer; }
+  tbody tr.main:hover { background: #f1eee6; }
+  .vchip { display: inline-block; width: 20px; text-align: center; font-weight: 700; font-size: 10.5px; padding: 2px 0; font-family: var(--sans); }
+  .v-pass { color: #fff; background: var(--good); }
+  .v-fail { color: #fff; background: var(--crit); }
+  .v-none { color: var(--ink-3); }
+  .pill { display: inline-block; font-family: var(--sans); font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; border: 1px solid var(--hairline); padding: 2px 8px; color: var(--ink-2); white-space: nowrap; }
+  .pill.suspect { color: var(--crit); border-color: var(--crit); }
+  tr.detail td { background: #f3f1ea; font-size: 11.5px; color: var(--ink-2); }
+  tr.detail b { color: var(--ink); }
+  .tcount { font-size: 11px; color: var(--ink-3); margin: 10px 0; font-style: italic; }
+  .fnote { font-size: 10.5px; color: var(--ink-3); margin-top: 10px; padding-top: 6px; border-top: 1px dashed var(--grid); }
+  .fnote b { color: var(--ink-2); }
+  .hm .cell.win { box-shadow: inset 0 0 0 2px var(--frame); }
+  .hm .cell.win::after { content: "▸ best"; font-family: var(--sans); font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase; margin-left: 6px; font-weight: 400; }
+  .ci { font-family: var(--sans); font-size: 10px; color: var(--ink-3); letter-spacing: 0.02em; }
+  /* scatter */
+  .scat-wrap { max-width: 720px; }
+  .scat-wrap svg { width: 100%; height: auto; display: block; }
+  .scat-wrap text { font-family: var(--sans); }
+  .showmore { margin-top: 12px; background: var(--surface); border: 1px solid var(--frame); color: var(--ink); padding: 6px 14px; font-family: var(--sans); font-size: 11px; cursor: pointer; }
+  .showmore:hover { background: #f1eee6; }
+  /* tooltip */
+  #tip { position: fixed; pointer-events: none; background: var(--surface); border: 1px solid var(--frame); box-shadow: 3px 3px 0 rgba(26,26,26,0.12); padding: 8px 10px; font-size: 11px; max-width: 320px; z-index: 10; display: none; color: var(--ink-2); }
+  #tip b { color: var(--ink); }
+  footer { margin-top: 40px; font-size: 11px; color: var(--ink-3); border-top: 2px solid var(--frame); padding-top: 18px; max-width: 880px; }
+  footer p { margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Analysis</h1>
+
+  <div class="flow" id="flow"></div>
+
+  <section>
+    <h2>I. Which model does the job?</h2>
+    <div class="cards" id="kpis"></div>
+    <div class="card" style="margin-top:14px">
+      <div class="hm" id="heatmap"></div>
+      <div class="hm-scale"><span>fewer tasks passed</span><span class="ramp" id="ramp"></span><span>more tasks passed</span></div>
+      <p class="takeaway" id="tk-heat"></p>
+      <p class="fnote"><b>Read with care:</b> this slice of Apex was hand-picked to oversample tasks where the models disagree, so gaps here are wider than they would be on a random draw. Rates carry 95% confidence intervals (±); a black border marks the best model in each field. 34 zero-score runs (19 GPT, 15 Qwen) were never graded by the pipeline and are counted as failures.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>II. What can you trust it with?</h2>
+    <p class="lede">Each thin strip is one task, ranked easiest to hardest within each field. <b>Green</b>: everything right. <b>Red</b>: everything wrong. <b>Amber</b>: partly right. Hover any strip for the task behind it.</p>
+    <div class="card">
+      <div id="matrix"></div>
+      <div class="legend">
+        <span class="li"><i class="sw" style="background:var(--good)"></i> Fully correct</span>
+        <span class="li"><i class="sw" style="background:var(--warn)"></i> Partly correct</span>
+        <span class="li"><i class="sw" style="background:var(--crit)"></i> Fully wrong</span>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h3>When does model choice flip the outcome?</h3>
+      <p class="lede" style="margin-bottom:4px">Each task falls into one of four patterns, depending on whether the per-task ranking matched the overall ranking (GPT ≥ Opus ≥ Qwen).</p>
+      <div id="patterns"></div>
+      <p class="takeaway" id="tk-patterns"></p>
+    </div>
+  </section>
+
+  <section>
+    <h2>III. Why do they fail?</h2>
+    <p class="lede">Three ways to read the failures: <b>who else failed the same criterion</b>, <b>what kind of work</b> failed, and <b>what actually went wrong</b> inside each failed run.</p>
+    <div class="two-col">
+      <div class="card">
+        <h3>Who else failed the same criterion?</h3>
+        <div id="attr"></div>
+        <p class="takeaway" id="tk-attr"></p>
+      </div>
+      <div class="card">
+        <h3>What kind of criterion failed?</h3>
+        <div id="pareto"></div>
+        <div class="legend" id="pareto-legend"></div>
+        <p class="takeaway" id="tk-pareto"></p>
+        <p class="fnote">Only failed criteria were type-classified, so these bars have no pass-rate denominator. "Send a message or email" has just 14 failures, too few to rank models on.</p>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h3>What actually went wrong, run by run</h3>
+      <p class="lede" style="margin-bottom:4px">Every failed run was checked for two things: did it turn in an answer, and did it open the same documents as a run that got the task fully right.</p>
+      <div id="causes"></div>
+      <div class="legend" id="causes-legend"></div>
+      <p class="takeaway" id="tk-causes"></p>
+      <p class="fnote">34 zero-score runs (19 GPT, 15 Qwen) were never graded by the pipeline; they are counted under "Never delivered an answer".</p>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h3>Does working longer help?</h3>
+      <p class="lede" style="margin-bottom:4px">One dot per model per field: how many steps a typical run takes (median) against the share of criteria it passes. Up and left is better: more right answers for less work.</p>
+      <div class="scat-wrap"><svg id="scatter" viewBox="0 0 720 380"></svg></div>
+      <div class="legend" id="scatter-legend"></div>
+      <p class="takeaway" id="tk-scatter"></p>
+      <p class="fnote"><b>Steps are a proxy, not a price.</b> The traces contain no token, cost, or latency data, so the x-axis counts trajectory steps (tool calls and messages). Step formats differ slightly across models; compare shapes, not decimals.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>IV. See it for yourself</h2>
+    <p class="lede">Every failed criterion, with all three models' results side by side. Click a row to see the expected answer and the grader's note. Rows flagged <span class="pill suspect">check the grading</span> tripped all three models on an otherwise fine task, so the criterion itself may be the problem.</p>
+    <div class="filters">
+      <select id="f-dom"></select>
+      <select id="f-bucket"></select>
+      <select id="f-model"></select>
+      <select id="f-type"></select>
+      <select id="f-cause"></select>
+    </div>
+    <div class="card" style="padding:0 0 14px; overflow-x:auto">
+      <table>
+        <thead><tr>
+          <th style="width:110px">Domain</th>
+          <th>Criterion the model(s) failed</th>
+          <th style="width:52px">GPT</th><th style="width:52px">Opus</th><th style="width:56px">Qwen</th>
+          <th style="width:170px">Reading</th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <p class="tcount" id="tcount" style="padding:0 14px"></p>
+      <button class="showmore" id="showmore" style="margin-left:14px">Show 100 more</button>
+      <p class="fnote" style="margin:0 14px">Grader's notes exist only for Qwen's runs, so the written evidence of failure is systematically richer for Qwen than for GPT or Opus. Weigh the pass/fail chips, which are graded identically for all three, over the prose.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p><b>Read with care:</b> this is a hand-picked slice of the Apex benchmark, weighted toward tasks where the models disagree. The scores compare the three models to each other; they are not official benchmark numbers.</p>
+    <p><b>How the causes were found:</b> each failed run's step-by-step record was checked automatically: did it turn in a final answer, and did it open the files that a fully-correct run on the same task opened. 34 zero-score runs (19 GPT, 15 Qwen) were never graded at all by the grading pipeline; this page counts them as failures.</p>
+    <p><b>Worth doing next:</b> read the runs that had the right documents but the wrong answer to find the exact step where the math slipped, and hand-check the 65 criteria flagged "check the grading".</p>
+  </footer>
+</div>
+<div id="tip"></div>
+
+<script>
+const DATA = /*__DATA__*/;
+const M = DATA.models;
+const MSHORT = { 'gpt-5.5':'GPT-5.5', 'opus-4.7':'Opus 4.7', 'qwen-3.6-27b':'Qwen 3.6' };
+const MCOLOR = { 'gpt-5.5':'var(--m-gpt)', 'opus-4.7':'var(--m-opus)', 'qwen-3.6-27b':'var(--m-qwen)' };
+const DOMS = ['Investment Banking','Law','Management Consulting'];
+const $ = id => document.getElementById(id);
+const pct = x => Math.round(x*100)+'%';
+
+/* header flow strip */
+const flow = [
+  {lbl:'Traces', n:'900', d:'300 tasks run by 3 models<br>(gpt-5.5 · opus-4.7 · qwen-3.6-27b)'},
+  {lbl:'Criteria graded', n:'2,920', d:'1 to 10 per task, judged pass or fail<br>(e.g. "states the share price is $21.43")<br>19 total left ungraded'},
+  {lbl:'Failed', n:'1,311', d:'explained below'}
+];
+$('flow').innerHTML = flow.map(f => `<div class="fbox"><span>${f.lbl}</span><b>${f.n}</b>${f.d ? `<div class="fdet">${f.d}</div>` : ''}</div>`).join('<span class="farrow">→</span>');
+
+/* Wilson 95% interval half-width, in percentage points */
+function ciHalf(p, n){
+  const z = 1.96, d = 1 + z*z/n, c = p + z*z/(2*n);
+  const h = z * Math.sqrt(p*(1-p)/n + z*z/(4*n*n));
+  return ((c+h)/d - (c-h)/d) / 2 * 100;
+}
+
+/* KPI tiles */
+$('kpis').innerHTML = M.map(m => {
+  const k = DATA.kpis[m];
+  const half = ciHalf(k.passrate, DATA.n_crit[m]);
+  return `<div class="card tile">
+    <div class="mname"><i class="dot" style="background:${MCOLOR[m]}"></i>${MSHORT[m]}</div>
+    <div class="big">${pct(k.passrate)} <span class="ci">±${half.toFixed(1)} pts</span></div>
+    <div class="cap">of ${DATA.n_crit[m].toLocaleString()} criteria met (95% CI)</div>
+    <div class="rows">
+      <span>No failed criteria on <b>${k.perfect} of 300</b> tasks</span>
+    </div></div>`;
+}).join('');
+
+/* heatmap */
+const seq = ['--seq-100','--seq-200','--seq-300','--seq-400','--seq-500','--seq-600','--seq-700'];
+const hmVals = Object.values(DATA.heatmap);
+const hmMin = Math.min(...hmVals), hmMax = Math.max(...hmVals);
+function seqColor(v){ const t = (v-hmMin)/(hmMax-hmMin); return `var(${seq[Math.round(t*(seq.length-1))]})`; }
+const domN = Object.fromEntries(DOMS.map(d => [d, DATA.tasks.filter(t => t.domain === d).length]));
+const domBest = Object.fromEntries(DOMS.map(d => [d, Math.max(...M.map(m => DATA.heatmap[`${m}|${d}`]))]));
+let hmHtml = `<div></div>` + DOMS.map(d => `<div class="hcol">${d.replace('Management ','')}</div>`).join('');
+M.forEach(m => {
+  hmHtml += `<div class="hlab"><i class="dot" style="background:${MCOLOR[m]};margin-right:7px"></i>${MSHORT[m]}</div>`;
+  DOMS.forEach(d => {
+    const v = DATA.heatmap[`${m}|${d}`];
+    const t = (v-hmMin)/(hmMax-hmMin);
+    const ink = t > 0.55 ? '#fff' : '#0b0b0b';
+    const win = v === domBest[d] ? ' win' : '';
+    const half = ciHalf(v, domN[d]);
+    hmHtml += `<div class="cell${win}" style="background:${seqColor(v)};color:${ink}" data-tip="<b>${MSHORT[m]} · ${d}</b><br>${pct(v)} of ${domN[d]} tasks passed (no criterion failed)<br>95% CI: ±${half.toFixed(0)} pts${win ? '<br>Best model in this field' : ''}">${pct(v)}</div>`;
+  });
+});
+$('heatmap').innerHTML = hmHtml;
+$('ramp').innerHTML = seq.map(s => `<i style="background:var(${s})"></i>`).join('');
+$('tk-heat').innerHTML = `<b>Share of tasks with no failed criteria, no partial credit.</b> GPT-5.5 leads in every field; Opus drops to a third on law; Qwen clears at most one task in five outside law. Model choice matters more than the kind of work.`;
+
+/* task matrix */
+let mtxHtml = '';
+DOMS.forEach(d => {
+  const rows = DATA.tasks.filter(t => t.domain === d);
+  mtxHtml += `<div class="mtx-dom"><div class="dlab">${d} · ${rows.length} tasks</div>`;
+  M.forEach((m, mi) => {
+    const cells = rows.map(t => {
+      const s = t.scores[mi];
+      const c = s === 1 ? 'var(--good)' : s === 0 ? 'var(--crit)' : 'var(--warn)';
+      return `<i style="background:${c}" data-tip="<b>${t.name}</b><br>${MSHORT[m]}: ${Math.round(s*t.nc)} of ${t.nc} criteria met<br>Pattern: ${t.pattern}<br><span style='opacity:.8'>${t.prompt.replace(/"/g,'&quot;')}…</span>"></i>`;
+    }).join('');
+    mtxHtml += `<div class="mtx-row"><span class="rlab">${MSHORT[m]}</span><div class="mtx-cells">${cells}</div></div>`;
+  });
+  mtxHtml += `</div>`;
+});
+$('matrix').innerHTML = mtxHtml;
+
+/* outcome patterns */
+const PATTERNS = [
+  ['Follows model strength', 'The per-task ranking matched the overall one', 'var(--seq-400)'],
+  ['Upset (weaker beat stronger)', 'A weaker model beat a stronger one outright', 'var(--navy)'],
+  ['All failed', 'No model met every criterion', 'var(--crit)'],
+  ['All passed', 'Every model met every criterion', 'var(--good)'],
+];
+const patCount = {}, patDom = {};
+DATA.tasks.forEach(t => {
+  patCount[t.pattern] = (patCount[t.pattern] || 0) + 1;
+  (patDom[t.pattern] = patDom[t.pattern] || {})[t.domain] = (patDom[t.pattern][t.domain] || 0) + 1;
+});
+const patMax = Math.max(...Object.values(patCount));
+$('patterns').innerHTML = PATTERNS.map(([k, why, c]) => {
+  const n = patCount[k] || 0;
+  const byDom = patDom[k] || {};
+  const tip = `<b>${k}: ${n} of 300 tasks</b><br>` + DOMS.map(d => `${d}: ${byDom[d]||0}`).join('<br>');
+  return `<div class="brow">
+    <div class="blab"><span>${k}</span><span class="n">${n}</span></div>
+    <div class="btrack"><i style="width:${n/patMax*100}%;background:${c}" data-tip="${tip.replace(/"/g,'&quot;')}"></i></div>
+    <div class="bwhy">${why}</div></div>`;
+}).join('');
+const nUpset = patCount['Upset (weaker beat stronger)'] || 0;
+$('tk-patterns').innerHTML = `<b>In ${nUpset} of 300 tasks (${Math.round(nUpset/3)}%), a weaker model beat a stronger one.</b> The overall ranking is a tendency, not a rule: on any single task, picking the "best" model is wrong about one time in four. Hover a strip above to see each task's pattern.`;
+
+/* attribution bars */
+const ATTR = [
+  ['Everyone failed', 'Suspect the task or the grading: no model could do it', 'var(--crit)'],
+  ['Two of three failed', 'Genuinely hard work: the current frontier', 'var(--warn)'],
+  ['One model failed', "That model's own weakness: the others managed fine", 'var(--seq-400)'],
+];
+const attrMax = Math.max(...Object.values(DATA.attr));
+$('attr').innerHTML = ATTR.map(([k, why, c]) => {
+  const n = DATA.attr[k];
+  const byDom = DATA.attr_dom[k] || {};
+  const tip = `<b>${k}: ${n} criteria</b><br>` + DOMS.map(d => `${d}: ${byDom[d]||0}`).join('<br>');
+  return `<div class="brow">
+    <div class="blab"><span>${k}</span><span class="n">${n}</span></div>
+    <div class="btrack"><i style="width:${n/attrMax*100}%;background:${c}" data-tip="${tip.replace(/"/g,'&quot;')}"></i></div>
+    <div class="bwhy">${why}</div></div>`;
+}).join('');
+$('tk-attr').innerHTML = `<b>${DATA.suspect_n} criteria failed for all three models even though the rest of the task went fine.</b> That points at the criterion, not the models: it may be unclear or graded too strictly. Each one is flagged in the table below.`;
+
+/* pareto */
+const pKeys = Object.keys(DATA.pareto).sort((a,b) => {
+  const s = k => Object.values(DATA.pareto[k]).reduce((x,y)=>x+y,0);
+  return s(b)-s(a);
+});
+const pMax = Math.max(...pKeys.map(k => Object.values(DATA.pareto[k]).reduce((x,y)=>x+y,0)));
+$('pareto').innerHTML = pKeys.map(k => {
+  const per = DATA.pareto[k];
+  const tot = Object.values(per).reduce((x,y)=>x+y,0);
+  const segs = M.filter(m => per[m]).map(m =>
+    `<i style="width:${per[m]/pMax*100}%;background:${MCOLOR[m]}" data-tip="<b>${k}</b><br>${MSHORT[m]}: ${per[m]} failures"></i>`).join('');
+  return `<div class="brow">
+    <div class="blab"><span>${k}</span><span class="n">${tot}</span></div>
+    <div class="btrack">${segs}</div></div>`;
+}).join('');
+$('pareto-legend').innerHTML = M.map(m => `<span class="li"><i class="sw" style="background:${MCOLOR[m]}"></i>${MSHORT[m]}</span>`).join('');
+$('tk-pareto').innerHTML = `<b>Most failures are wrong numbers, not missing work.</b> The models almost always turn something in; what fails is the specific figure, a valuation, a rate, a total. Steps like sending emails are rarely the problem.`;
+
+/* root causes from traces */
+const CAUSE_WHY = {
+  'Never delivered an answer': 'The run crashed or stopped before answering: an execution problem, not a knowledge problem',
+  'Skipped documents the successful model used': 'It never opened files the winning model relied on: a research problem',
+  'Used the same documents, got the work wrong': 'Right evidence, wrong output: a calculation or reasoning problem',
+  'No model got it fully right': 'No fully-correct run exists to compare against: hard task or task problem',
+};
+const cMax = Math.max(...DATA.cause_names.map(k => Object.values(DATA.causes[k] || {}).reduce((x,y)=>x+y,0)));
+$('causes').innerHTML = DATA.cause_names.map(k => {
+  const per = DATA.causes[k] || {};
+  const tot = Object.values(per).reduce((x,y)=>x+y,0);
+  const segs = M.filter(m => per[m]).map(m =>
+    `<i style="width:${per[m]/cMax*100}%;background:${MCOLOR[m]}" data-tip="<b>${k}</b><br>${MSHORT[m]}: ${per[m]} failed runs"></i>`).join('');
+  return `<div class="brow">
+    <div class="blab"><span>${k}</span><span class="n">${tot} runs</span></div>
+    <div class="btrack">${segs}</div>
+    <div class="bwhy">${CAUSE_WHY[k]}</div></div>`;
+}).join('');
+$('causes-legend').innerHTML = M.map(m => `<span class="li"><i class="sw" style="background:${MCOLOR[m]}"></i>${MSHORT[m]}</span>`).join('');
+$('tk-causes').innerHTML = `<b>Each model fails in its own way.</b> Qwen's problem is finishing: 75 runs never turned in an answer and 68 more never opened the needed documents. Opus always turns something in but skips source documents far more often than GPT. GPT rarely fails alone: 100 of its 148 imperfect runs were on tasks nobody solved.`;
+
+/* effort scatter */
+(function(){
+  const DLAB = {'Investment Banking':'IB','Law':'Law','Management Consulting':'Consulting'};
+  const pts = [];
+  M.forEach(m => DOMS.forEach(d => {
+    const s = DATA.steps[`${m}|${d}`];
+    if (s) pts.push({m, d, x: s.med_steps, y: s.passrate, n: s.n_runs, nc: s.n_crit});
+  }));
+  const W = 720, H = 380, L = 56, R = 16, T = 16, B = 46;
+  const xmax = Math.ceil(Math.max(...pts.map(p => p.x)) * 1.15 / 10) * 10;
+  const X = v => L + v / xmax * (W - L - R);
+  const Y = v => T + (1 - v) * (H - T - B);
+  let svg = '';
+  for (let g = 0; g <= 100; g += 25) {
+    svg += `<line x1="${L}" y1="${Y(g/100)}" x2="${W-R}" y2="${Y(g/100)}" stroke="var(--grid)" stroke-width="1"/>`;
+    svg += `<text x="${L-8}" y="${Y(g/100)+3}" text-anchor="end" font-size="10" fill="var(--ink-3)">${g}%</text>`;
+  }
+  for (let g = 0; g <= xmax; g += 20) {
+    svg += `<text x="${X(g)}" y="${H-B+16}" text-anchor="middle" font-size="10" fill="var(--ink-3)">${g}</text>`;
+  }
+  svg += `<line x1="${L}" y1="${Y(0)}" x2="${W-R}" y2="${Y(0)}" stroke="var(--hairline)" stroke-width="1"/>`;
+  svg += `<text x="${(L+W-R)/2}" y="${H-8}" text-anchor="middle" font-size="10" fill="var(--ink-2)" letter-spacing="0.06em">MEDIAN STEPS PER RUN</text>`;
+  svg += `<text x="${L}" y="${T-4}" font-size="10" fill="var(--ink-2)" letter-spacing="0.06em">CRITERIA PASSED</text>`;
+  /* dots, then labels placed greedily right → left → above → below */
+  const boxes = pts.map(p => ({x0: X(p.x)-7, x1: X(p.x)+7, y0: Y(p.y)-7, y1: Y(p.y)+7}));
+  const hits = (b) => boxes.some(o => b.x0 < o.x1 && b.x1 > o.x0 && b.y0 < o.y1 && b.y1 > o.y0);
+  pts.forEach(p => {
+    svg += `<circle cx="${X(p.x)}" cy="${Y(p.y)}" r="5.5" fill="${MCOLOR[p.m]}" stroke="var(--surface)" stroke-width="2" data-tip="<b>${MSHORT[p.m]} · ${p.d}</b><br>Median ${p.x} steps per run (${p.n} runs)<br>${pct(p.y)} of ${p.nc} criteria passed"/>`;
+    const wpx = DLAB[p.d].length * 5.4 + 4;
+    const cands = [
+      {x: X(p.x)+9,  y: Y(p.y)+3,  a: 'start',  b: {x0: X(p.x)+9,      x1: X(p.x)+9+wpx,  y0: Y(p.y)-6,  y1: Y(p.y)+6}},
+      {x: X(p.x)-9,  y: Y(p.y)+3,  a: 'end',    b: {x0: X(p.x)-9-wpx,  x1: X(p.x)-9,      y0: Y(p.y)-6,  y1: Y(p.y)+6}},
+      {x: X(p.x),    y: Y(p.y)-11, a: 'middle', b: {x0: X(p.x)-wpx/2,  x1: X(p.x)+wpx/2,  y0: Y(p.y)-20, y1: Y(p.y)-8}},
+      {x: X(p.x),    y: Y(p.y)+17, a: 'middle', b: {x0: X(p.x)-wpx/2,  x1: X(p.x)+wpx/2,  y0: Y(p.y)+8,  y1: Y(p.y)+20}},
+    ];
+    const c = cands.find(c => !hits(c.b)) || cands[0];
+    boxes.push(c.b);
+    svg += `<text x="${c.x}" y="${c.y}" text-anchor="${c.a}" font-size="9.5" fill="var(--ink-2)">${DLAB[p.d]}</text>`;
+  });
+  $('scatter').innerHTML = svg;
+  $('scatter-legend').innerHTML = M.map(m => `<span class="li"><i class="sw" style="background:${MCOLOR[m]}"></i>${MSHORT[m]}</span>`).join('');
+  $('tk-scatter').innerHTML = `<b>Working longer is not what separates the models.</b> Qwen takes about as many steps as Opus yet passes far fewer criteria, so its problem is not effort. GPT works the longest and converts the extra steps into the best results in every field. Opus's short Law runs (median 40 steps vs GPT's 68) sit exactly where its weakest scores are.`;
+})();
+
+/* explorer */
+const BUCKETS = ['Everyone failed','Two of three failed','One model failed'];
+const TYPES = pKeys;
+function opts(sel, label, items){ $(sel).innerHTML = `<option value="">${label}: all</option>` + items.map(x => `<option>${x}</option>`).join(''); }
+opts('f-dom', 'Domain', DOMS);
+opts('f-bucket', 'Who failed', BUCKETS);
+opts('f-model', 'Model that failed', M.map(m => MSHORT[m]));
+opts('f-type', 'Criterion type', TYPES);
+opts('f-cause', 'Root cause', DATA.cause_names);
+let shown = 100;
+function renderTable(){
+  const fd = $('f-dom').value, fb = $('f-bucket').value, fm = $('f-model').value, ft = $('f-type').value, fc = $('f-cause').value;
+  const rows = DATA.crits.filter(r =>
+    (!fd || r.domain === fd) && (!fb || r.bucket === fb) && (!ft || r.type === ft) &&
+    (!fm || r.v[M.findIndex(m => MSHORT[m] === fm)] === 'fail') &&
+    (!fc || (r.causes || []).includes(fc)));
+  const chip = v => v === 'pass' ? '<span class="vchip v-pass">✓</span>' : v === 'fail' ? '<span class="vchip v-fail">✗</span>' : '<span class="vchip v-none">–</span>';
+  const reading = r => r.suspect ? '<span class="pill suspect">check the grading</span>'
+    : r.bucket === 'One model failed' ? '<span class="pill">model weakness</span>'
+    : r.bucket === 'Everyone failed' ? '<span class="pill">nobody could</span>'
+    : '<span class="pill">hard criterion</span>';
+  $('tbody').innerHTML = rows.slice(0, shown).map((r, i) => `
+    <tr class="main" data-i="${i}">
+      <td>${r.domain.replace('Management ','')}</td>
+      <td>${r.text}${r.text.length >= 220 ? '…' : ''}<div style="font-size:11.5px;color:var(--ink-3);margin-top:2px">${r.task}</div></td>
+      <td>${chip(r.v[0])}</td><td>${chip(r.v[1])}</td><td>${chip(r.v[2])}</td>
+      <td>${reading(r)}</td>
+    </tr>
+    <tr class="detail" style="display:none"><td colspan="6">
+      ${(r.causes || []).map((c, mi) => c ? `<b>Why ${MSHORT[M[mi]]} failed this run:</b> ${c}<br>` : '').join('')}
+      ${r.missed_docs ? `<b>Documents it never opened:</b> ${r.missed_docs}<br>` : ''}
+      ${r.gold ? `<b>Expected answer:</b> ${r.gold}…<br>` : ''}
+      ${r.rationale ? `<b>Grader's note (on Qwen's attempt):</b> ${r.rationale}…` : ''}
+    </td></tr>`).join('');
+  $('tcount').textContent = `Showing ${Math.min(shown, rows.length)} of ${rows.length} failed criteria${(fd||fb||fm||ft) ? ' (filtered)' : ''}.`;
+  $('showmore').style.display = rows.length > shown ? '' : 'none';
+  document.querySelectorAll('tr.main').forEach(tr => tr.addEventListener('click', () => {
+    const d = tr.nextElementSibling; d.style.display = d.style.display === 'none' ? '' : 'none';
+  }));
+}
+['f-dom','f-bucket','f-model','f-type','f-cause'].forEach(id => $(id).addEventListener('change', () => { shown = 100; renderTable(); }));
+$('showmore').addEventListener('click', () => { shown += 100; renderTable(); });
+renderTable();
+
+/* tooltip */
+const tip = $('tip');
+document.addEventListener('mouseover', e => {
+  const t = e.target.closest('[data-tip]');
+  if (!t) { tip.style.display = 'none'; return; }
+  tip.innerHTML = t.dataset.tip; tip.style.display = 'block';
+});
+document.addEventListener('mousemove', e => {
+  if (tip.style.display === 'none') return;
+  const pad = 14, w = tip.offsetWidth, h = tip.offsetHeight;
+  tip.style.left = Math.min(e.clientX + pad, innerWidth - w - 8) + 'px';
+  tip.style.top = (e.clientY + pad + h > innerHeight ? e.clientY - h - 8 : e.clientY + pad) + 'px';
+});
+</script>
+</body>
+</html>

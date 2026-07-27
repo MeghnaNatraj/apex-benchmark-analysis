@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dataset</title>
+<style>
+  :root{
+    --ink:#1c1c1c;
+    --paper:#fcfbf9;
+    --panel:#ffffff;
+    --rule:#d9d5cd;
+    --rule-dark:#8f8a80;
+    --muted:#6d6960;
+    --navy:#1f3a5f;
+    --accent:#8c3325;
+    --pass:#2f6f44;
+    --fail:#a63a32;
+    --ungraded:#a8a29a;
+    --serif:"Palatino Nova",Palatino,"Palatino Linotype","Book Antiqua",Georgia,serif;
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--serif);
+    font-size:13px;
+    line-height:1.4;
+    padding:8px 26px 4px;
+    max-width:1380px;
+    margin:0 auto;
+  }
+  .eyebrow{
+    font-family:var(--sans);
+    font-size:9.5px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+
+  /* ---------- masthead ---------- */
+  header{border-bottom:2px solid var(--ink);padding-bottom:6px;margin-bottom:6px;
+    display:flex;align-items:flex-end;gap:18px}
+  h1{font-size:21px;font-weight:600;letter-spacing:.01em;line-height:1.1}
+  header .sub{font-size:12px;color:var(--muted);font-style:italic;padding-bottom:1px}
+  .legend{margin-left:auto;display:flex;gap:16px;align-items:center;font-family:var(--sans);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding-bottom:2px}
+  .chip{display:inline-block;width:9px;height:9px;vertical-align:-.5px;margin-right:5px}
+  .chip.p{background:var(--pass)} .chip.f{background:#fff;border:1.5px solid var(--fail)} .chip.u{background:var(--ungraded)}
+
+  section{margin-bottom:6px}
+  .sec-head{display:flex;align-items:baseline;gap:10px;margin-bottom:5px}
+  .sec-head .rule{flex:1;border-top:1px solid var(--rule)}
+
+  /* ---------- I. flow strip ---------- */
+  .flow{display:flex;align-items:stretch;justify-content:center}
+  .fbox{
+    border:1px solid var(--rule-dark);
+    background:var(--panel);
+    padding:8px 20px 9px;
+    text-align:center;
+    min-width:200px;
+  }
+  .fbox .lbl{font-family:var(--sans);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .fbox .n{font-size:26px;font-weight:600;line-height:1.1;color:var(--navy);font-variant-numeric:tabular-nums}
+  .fbox .n small{font-size:15px;font-weight:600}
+  .fbox .detail{font-size:11px;color:var(--ink);margin-top:1px}
+  .fbox .detail i{color:var(--muted)}
+  .farrow{align-self:center;flex:0 0 auto;margin:0 10px}
+  .scoreline{text-align:center;font-size:12.5px;margin-top:8px;color:var(--ink)}
+  .scoreline i{color:var(--muted)}
+
+  /* ---------- II. domains ---------- */
+  .domains{display:flex;gap:16px;justify-content:center}
+  .dom{flex:1 1 0;max-width:445px;border:1px solid var(--rule-dark);background:var(--panel)}
+  .dom .dom-head{border-bottom:1px solid var(--rule);padding:5px 12px 4px;display:flex;align-items:baseline;justify-content:space-between}
+  .dom .dom-head h2{font-size:14.5px;font-weight:600}
+  .dom .dom-head .cnt{font-family:var(--sans);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .dom svg{display:block;width:100%;height:auto;padding:2px 6px 0}
+  .caption{text-align:center;font-size:12.5px;color:var(--ink);margin-top:7px}
+
+  /* ---------- III. anatomy ---------- */
+  .anatomy{display:flex;align-items:stretch}
+  .abox{border:1px solid var(--rule-dark);background:var(--panel);padding:7px 12px;font-size:11px;flex:1 1 0;min-width:0}
+  .abox h3{font-family:var(--sans);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--navy);
+    border-bottom:1px solid var(--rule);padding-bottom:4px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:baseline}
+  .abox h3 .note{font-weight:400;color:var(--muted);letter-spacing:.04em;text-transform:none;font-size:9.5px}
+  .quote{font-size:11px;line-height:1.45;color:#33302a}
+  .quote.excerpt{font-style:italic}
+  .aarrow{align-self:center;flex:0 0 auto;margin:0 7px}
+  .tools{list-style:none;font-family:var(--sans);font-size:10px;color:#44413b;margin-top:3px}
+  .tools li{padding:1px 0;border-bottom:1px dotted var(--rule)}
+  .tools li:last-child{border-bottom:none}
+  .tools .ct{float:right;color:var(--muted);font-variant-numeric:tabular-nums}
+  .crit{display:flex;align-items:flex-start;gap:7px;font-size:10.5px;line-height:1.3;padding:2.5px 0;border-bottom:1px dotted var(--rule)}
+  .crit .chip{flex:0 0 auto;margin:3px 0 0}
+  .crit .v{font-family:var(--sans);font-size:9px;letter-spacing:.08em;text-transform:uppercase;flex:0 0 58px;margin-top:1px}
+  .crit .v.p{color:var(--pass)} .crit .v.f{color:var(--fail)}
+  .meta{border-top:1px solid var(--rule);margin-top:7px;padding-top:5px;font-family:var(--sans);font-size:10px;color:#44413b}
+  .meta.top{border-top:none;border-bottom:1px solid var(--rule);margin:0 0 6px;padding:0 0 5px}
+  .meta div{padding:1.5px 0}
+  .meta span{display:inline-block;width:88px;letter-spacing:.1em;text-transform:uppercase;font-size:9px;color:var(--muted)}
+  .meta .dm{color:var(--navy);font-weight:600}
+  .meta .md{color:var(--navy);font-weight:600}
+  .meta-lbl{font-family:var(--sans);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+  .goldbox{border-left:3px solid var(--rule-dark);padding:3px 8px;margin-top:6px;font-size:10.5px;color:#55514a;font-style:italic;background:#f7f5f0}
+  .goldbox b{font-style:normal;font-family:var(--sans);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .scorenote{margin-top:6px;font-size:11px}
+  .scorenote b{color:var(--navy)}
+
+  /* ---------- III.B one task, three traces ---------- */
+  .sub-head{display:flex;align-items:baseline;gap:10px;margin:0 0 4px;font-family:var(--sans);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .sub-head .rule{flex:1;border-top:1px dotted var(--rule)}
+  .sub-head .file{letter-spacing:.06em;text-transform:none}
+  .runrow{display:flex;align-items:center;gap:14px;padding:2.5px 0;border-bottom:1px dotted var(--rule);font-family:var(--sans);font-size:10.5px}
+  .runrow.hd{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--rule);padding:0 0 3px}
+  .runrow:last-of-type{border-bottom:none}
+  .runrow .rm{flex:0 0 96px;color:var(--navy);font-weight:600;font-size:11px}
+  .runrow.hd .rm{color:var(--muted);font-weight:400;font-size:9px}
+  .runrow .vt{flex:1;display:flex;gap:16px}
+  .runrow .rs{flex:0 0 86px;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+  .runrow.hd .rs{color:var(--muted)}
+  .vtok{display:inline-flex;align-items:center;gap:5px;flex:0 0 158px}
+  .vtok .chip{margin:0}
+  .vtok.p{color:var(--pass)} .vtok.f{color:var(--fail)}
+  footer{border-top:1px solid var(--rule);margin-top:12px;padding-top:5px;font-size:10.5px;color:var(--muted);font-style:italic;text-align:right}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Dataset</h1>
+</header>
+
+<!-- I. composition -->
+<section>
+  <div class="sec-head"><span class="eyebrow">I. Overview</span><span class="rule"></span></div>
+  <div class="flow" id="flow"></div>
+</section>
+
+<!-- II. structure -->
+<section>
+  <div class="sec-head"><span class="eyebrow">II. Structure</span><span class="rule"></span>
+    <span class="legend">
+      <span>Criteria vary by task (1 to 10)</span>
+      <span><span class="chip p"></span>Pass</span>
+      <span><span class="chip f"></span>Fail</span>
+      <span><span class="chip u"></span>Ungraded (19 of 2,920)</span>
+    </span>
+  </div>
+  <div class="domains" id="domains"></div>
+</section>
+
+<!-- III. anatomy of a task and its traces -->
+<section>
+  <div class="sec-head"><span class="eyebrow">III. Anatomy of a task and its traces</span><span class="rule"></span></div>
+  <div class="sub-head"><span>A &middot; One trace in detail</span><span class="rule"></span><span class="file">traces/45c2f4ca__gpt-5.5.json</span></div>
+  <div class="anatomy">
+    <div class="abox">
+      <h3>Task</h3>
+      <div class="quote excerpt">&ldquo;Harborview Capital Partners, L.P. (&ldquo;Harborview&rdquo;) has decided to lease one of the Singapore properties it acquired. The property is 14,000 square feet and is going to be used to sell bicycles&hellip; a 2-year commercial lease&hellip; Harborview has a S$3.5 million public liability policy&hellip; Can Harborview r[equire]&hellip;&rdquo;</div>
+    </div>
+    <svg class="aarrow" width="30" height="14" viewBox="0 0 30 14"><line x1="0" y1="7" x2="24" y2="7" stroke="#1c1c1c" stroke-width="1"/><path d="M23 3.5 L29 7 L23 10.5 Z" fill="#1c1c1c"/></svg>
+    <div class="abox">
+      <h3>Model</h3>
+      <div class="quote">gpt-5.5</div>
+      <h3 style="margin-top:8px">Agent loop <span class="note">sandboxed environment</span></h3>
+      <div class="quote">62 steps and 30 tool calls over the company's files, email, spreadsheets, and PDF documents, including:</div>
+      <ul class="tools">
+        <li>pdfs_search_pdf <span class="ct">&times;10</span></li>
+        <li>pdfs_read_pdf_pages <span class="ct">&times;7</span></li>
+        <li>filesystem_search_files <span class="ct">&times;5</span></li>
+        <li>word_read_document_content <span class="ct">&times;2</span></li>
+        <li style="color:var(--muted)">+ 6 toolbelt setup calls</li>
+      </ul>
+    </div>
+    <svg class="aarrow" width="30" height="14" viewBox="0 0 30 14"><line x1="0" y1="7" x2="24" y2="7" stroke="#1c1c1c" stroke-width="1"/><path d="M23 3.5 L29 7 L23 10.5 Z" fill="#1c1c1c"/></svg>
+    <div class="abox">
+      <h3>Final answer</h3>
+      <div class="quote excerpt">&ldquo;My view: No, Harborview should not require the lessee to carry S$3.5 million in public liability insurance for this lease. It can require up to S$3 million, but not S$3.5 million&hellip;&rdquo;</div>
+      <div class="goldbox"><b>Gold response</b><br>&ldquo;Harbor View Capital Partners, L.P. cannot require the lessee to carry S$3.5 million&hellip; The Code of Conduct applies to qualifying leases&hellip;&rdquo;</div>
+    </div>
+    <svg class="aarrow" width="30" height="14" viewBox="0 0 30 14"><line x1="0" y1="7" x2="24" y2="7" stroke="#1c1c1c" stroke-width="1"/><path d="M23 3.5 L29 7 L23 10.5 Z" fill="#1c1c1c"/></svg>
+    <div class="abox" style="flex:1.3 1 0">
+      <h3>Criteria verdicts <span class="note">against the gold response</span></h3>
+      <div class="crit"><span class="chip f"></span><span class="v f">Fail</span>States the insurance provision is mandatory and cannot be overridden</div>
+      <div class="crit"><span class="chip p"></span><span class="v p">Pass</span>States Harborview cannot require S$3.5M public liability insurance</div>
+      <div class="crit"><span class="chip p"></span><span class="v p">Pass</span>States the lease is a qualifying lease under the Singapore Code of Conduct</div>
+      <div class="crit"><span class="chip p"></span><span class="v p">Pass</span>States the Code limits required coverage to S$3 million</div>
+      <div class="scorenote">Score: <b>3 of 4 criteria passed = 0.75</b></div>
+    </div>
+  </div>
+  <div class="sub-head" style="margin-top:4px"><span>B &middot; One task, three traces in detail</span><span class="rule"></span><span class="file">traces/45c2f4ca__&lt;model&gt;.json</span></div>
+  <div class="runrow hd"><span class="rm">Model</span><span class="vt">Criteria verdicts</span><span class="rs">Score</span></div>
+  <div class="runrow"><span class="rm">gpt-5.5</span><span class="vt"><span class="vtok f"><span class="chip f"></span>Provision mandatory</span><span class="vtok p"><span class="chip p"></span>Cannot require S$3.5M</span><span class="vtok p"><span class="chip p"></span>Qualifying lease</span><span class="vtok p"><span class="chip p"></span>S$3M limit</span></span><span class="rs">3/4 = 0.75</span></div>
+  <div class="runrow"><span class="rm">opus-4.7</span><span class="vt"><span class="vtok f"><span class="chip f"></span>Provision mandatory</span><span class="vtok f"><span class="chip f"></span>Cannot require S$3.5M</span><span class="vtok f"><span class="chip f"></span>Qualifying lease</span><span class="vtok f"><span class="chip f"></span>S$3M limit</span></span><span class="rs">0/4 = 0.00</span></div>
+  <div class="runrow"><span class="rm">qwen-3.6-27b</span><span class="vt"><span class="vtok p"><span class="chip p"></span>Provision mandatory</span><span class="vtok p"><span class="chip p"></span>Cannot require S$3.5M</span><span class="vtok p"><span class="chip p"></span>Qualifying lease</span><span class="vtok p"><span class="chip p"></span>S$3M limit</span></span><span class="rs">4/4 = 1.00</span></div>
+
+</section>
+
+<script>
+/* ---------- I. flow strip ---------- */
+const FLOW = [
+  { lbl:"Domains", n:"3", detail:"Law &middot; Investment Banking &middot; Management Consulting" },
+  { lbl:"Tasks", n:"300", detail:"100 tasks per domain <i>(none shared)</i>" },
+  { lbl:"Traces", n:"900", detail:"300 tasks run by 3 models<br>(gpt-5.5 &middot; opus-4.7 &middot; qwen-3.6-27b)" }
+];
+const arrow = `<svg class="farrow" width="34" height="14" viewBox="0 0 34 14">
+  <line x1="0" y1="7" x2="27" y2="7" stroke="#1c1c1c" stroke-width="1"/>
+  <path d="M26 3.5 L33 7 L26 10.5 Z" fill="#1c1c1c"/></svg>`;
+document.getElementById("flow").innerHTML = FLOW.map((f,i) =>
+  `${i ? arrow : ""}<div class="fbox"><div class="lbl">${f.lbl}</div><div class="n">${f.n}</div><div class="detail">${f.detail}</div></div>`
+).join("");
+
+/* ---------- II. domain panels (real example tasks, real verdicts) ---------- */
+const MODELS = ["gpt-5.5","opus-4.7","qwen-3.6-27b"];
+const DOMAINS = [
+  { name:"Law", task:"World434_JS_01", hl:34, anatomyModel:0, traceId:"45c2f4ca__gpt-5.5",
+    verdicts:[["f","p","p","p"],["f","f","f","f"],["p","p","p","p"]] },
+  { name:"Investment Banking", task:"World226_BS_01", hl:52,
+    verdicts:[["f","p","p","p","p","p"],["f","p","p","p","p","p"],["f","f","f","f","f","f"]] },
+  { name:"Management Consulting", task:"World 133 - NK Task #1", hl:41,
+    verdicts:[["p","f","f","f"],["p","p","p","p"],["f","f","f","f"]] }
+];
+const VC = { p:"var(--pass)", f:"var(--fail)", u:"var(--ungraded)" };
+
+function domainSvg(d){
+  const W=430, H=218, top=12, bot=H-16, n=100;
+  const pitch=(bot-top)/n, x0=14, len=118;
+  let s = `<svg viewBox="0 0 ${W} ${H}" font-family="Helvetica Neue,Helvetica,Arial,sans-serif">`;
+  for(let i=0;i<n;i++){
+    const y = (top + i*pitch).toFixed(2);
+    const hl = i===d.hl;
+    s += `<line x1="${x0}" y1="${y}" x2="${x0+len}" y2="${y}" stroke="${hl?'var(--accent)':'#cdc8be'}" stroke-width="${hl?2.2:0.8}"/>`;
+  }
+  s += `<text x="${x0+len/2}" y="${H-3}" text-anchor="middle" font-size="8.5" letter-spacing="1" fill="var(--muted)">100 TASKS</text>`;
+  const hy = top + d.hl*pitch;
+  s += `<text x="${x0+4}" y="${(hy-4).toFixed(1)}" font-size="8.5" letter-spacing=".5" fill="var(--accent)" paint-order="stroke" stroke="#ffffff" stroke-width="3" stroke-linejoin="round">${d.task}</text>`;
+  const rows=[44,110,176], fx=x0+len+4, cw=12;
+  d.verdicts.forEach((vs,m)=>{
+    const ry=rows[m];
+    s += `<path d="M ${fx} ${hy.toFixed(1)} C ${fx+44} ${hy.toFixed(1)}, ${fx+44} ${ry}, ${fx+80} ${ry}" fill="none" stroke="var(--navy)" stroke-width="1.1"/>`;
+    s += `<path d="M ${fx+79} ${ry-3.2} L ${fx+85} ${ry} L ${fx+79} ${ry+3.2} Z" fill="var(--navy)"/>`;
+    const isAnat = d.anatomyModel===m;
+    const bw = vs.length*(cw+3)+33;
+    s += `<rect x="${fx+88}" y="${ry-20}" width="${bw}" height="34" fill="none" stroke="${isAnat?'var(--accent)':'var(--rule)'}" stroke-width="${isAnat?1.4:1}"/>`;
+    if(isAnat) s += `<text x="${fx+88}" y="${ry+24}" font-size="7.5" letter-spacing=".5" fill="var(--accent)">TRACE ${d.traceId}</text>`;
+    s += `<text x="${fx+91}" y="${ry-8}" font-size="9.5" fill="var(--ink)">${MODELS[m]}</text>`;
+    const npass = vs.filter(v=>v==="p").length;
+    vs.forEach((v,k)=>{
+      const vx = fx+91+k*(cw+3);
+      s += v==="f"
+        ? `<rect x="${vx+0.75}" y="${ry-1.25}" width="${cw-1.5}" height="${cw-1.5}" fill="#ffffff" stroke="var(--fail)" stroke-width="1.5"/>`
+        : `<rect x="${vx}" y="${ry-2}" width="${cw}" height="${cw}" fill="${VC[v]}"/>`;
+    });
+    s += `<text x="${fx+91+vs.length*(cw+3)+6}" y="${ry+8}" font-size="9.5" fill="var(--muted)" font-variant-numeric="tabular-nums">${npass}/${vs.length}</text>`;
+  });
+  s += `<text x="${fx+80}" y="${H-3}" font-size="8.5" letter-spacing="1" fill="var(--muted)">1 TASK &rarr; 3 TRACES &rarr; ${d.verdicts[0].length} CRITERIA</text>`;
+  return s + `</svg>`;
+}
+document.getElementById("domains").innerHTML = DOMAINS.map(d =>
+  `<div class="dom"><div class="dom-head"><h2>${d.name}</h2></div>${domainSvg(d)}</div>`
+).join("");
+</script>
+</body>
+</html>

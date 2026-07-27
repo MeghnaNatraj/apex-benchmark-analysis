@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Apex benchmark analysis</title>
+<style>
+  :root{
+    --ink:#1c1c1c;
+    --paper:#fcfbf9;
+    --panel:#ffffff;
+    --rule:#d9d5cd;
+    --rule-dark:#8f8a80;
+    --muted:#6d6960;
+    --navy:#1f3a5f;
+    --serif:"Palatino Nova",Palatino,"Palatino Linotype","Book Antiqua",Georgia,serif;
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--serif);
+    font-size:15px;
+    line-height:1.5;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:32px 24px;
+  }
+  main{width:100%;max-width:720px}
+  .eyebrow{
+    font-family:var(--sans);
+    font-size:10px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-bottom:8px;
+  }
+  h1{
+    font-size:30px;
+    font-weight:600;
+    letter-spacing:.01em;
+    line-height:1.15;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:12px;
+    margin-bottom:14px;
+  }
+  .intro{font-size:15px;color:#33302a;margin-bottom:26px}
+
+  .stats{display:flex;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+  .stat{flex:1 1 0;text-align:center;padding:14px 8px 12px;border-right:1px solid var(--rule)}
+  .stat:last-child{border-right:none}
+  .stat .model{font-family:var(--sans);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .stat .n{font-size:34px;font-weight:600;line-height:1.15;color:var(--navy);font-variant-numeric:tabular-nums}
+  .stat .n small{font-size:18px;font-weight:600}
+  .stats-caption{
+    font-family:var(--sans);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);text-align:center;margin:8px 0 30px;
+  }
+
+  .cards{display:flex;gap:18px;margin-bottom:30px}
+  a.card{
+    flex:1 1 0;display:block;text-decoration:none;color:var(--ink);
+    border:1px solid var(--rule-dark);background:var(--panel);
+    padding:16px 18px 15px;
+  }
+  a.card:hover{border-color:var(--ink)}
+  .card .no{font-family:var(--sans);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+  .card h2{font-size:18px;font-weight:600;line-height:1.2;color:var(--navy);margin-bottom:6px}
+  .card p{font-size:13px;color:#55514a;line-height:1.45}
+  .card .go{font-family:var(--sans);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--navy);margin-top:10px}
+
+  footer{
+    border-top:1px solid var(--rule);padding-top:10px;
+    font-family:var(--sans);font-size:11px;color:var(--muted);
+    display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  }
+  footer a{color:var(--navy);text-decoration:none}
+  footer a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<main>
+  <p class="eyebrow">Meghna Natraj &middot; 2026</p>
+  <h1>Apex benchmark analysis</h1>
+  <p class="intro">How well do AI models do white-collar work? The Apex benchmark holds 300 real work tasks across three fields (Law, Investment Banking, Management Consulting), each with a correct answer and pass/fail grading criteria. Three models attempted every task, and each answer was graded criterion by criterion against the correct one.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="model">GPT-5.5</div><div class="n">64.9<small>%</small></div></div>
+    <div class="stat"><div class="model">Claude Opus 4.7</div><div class="n">57.6<small>%</small></div></div>
+    <div class="stat"><div class="model">Qwen 3.6</div><div class="n">43.2<small>%</small></div></div>
+  </div>
+  <p class="stats-caption">Share of grading criteria met across 300 tasks</p>
+
+  <div class="cards">
+    <a class="card" href="explainer.html">
+      <div class="no">1</div>
+      <h2>The dataset, explained</h2>
+      <p>What 300 tasks, 900 runs, and graded criteria look like. Start here.</p>
+      <div class="go">Read &rarr;</div>
+    </a>
+    <a class="card" href="analysis.html">
+      <div class="no">2</div>
+      <h2>The analysis</h2>
+      <p>Which model does the job, what you can trust it with, and why they fail.</p>
+      <div class="go">Read &rarr;</div>
+    </a>
+  </div>
+
+  <footer>
+    <span><a href="https://github.com/MeghnaNatraj/apex-benchmark-analysis">Source on GitHub</a></span>
+    
+  </footer>
+</main>
+</body>
+</html>
