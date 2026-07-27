@@ -1,26 +1,26 @@
 # Apex benchmark analysis
 
-An analysis of how well three AI models do white-collar work. The Apex benchmark is a set of 300 real-world work tasks, 100 each in Law, Investment Banking, and Management Consulting. Each task has a correct answer and a set of pass/fail grading criteria. Three models (OpenAI's GPT-5.5, Anthropic's Claude Opus 4.7, and Alibaba's Qwen 3.6) each attempted all 300 tasks, for 900 runs in total. This repository holds the two pages that present the results, the write-ups behind them, and the scripts and scores used to compute every number.
+How well three AI models (GPT-5.5, Claude Opus 4.7, and Qwen 3.6) do white-collar work across 300 real tasks in Law, Investment Banking, and Management Consulting.
 
-## View the pages
+**[View the live report](https://meghnanatraj.github.io/apex-benchmark-analysis/)**
 
-The pages are published at https://meghnanatraj.github.io/apex-benchmark-analysis/
+[![The analysis](docs/assets/analysis.png)](https://meghnanatraj.github.io/apex-benchmark-analysis/analysis.html)
 
-1. [The dataset, explained](https://meghnanatraj.github.io/apex-benchmark-analysis/explainer.html), start here. What the 300 tasks look like, how the 900 runs were graded, and what a grading criterion is.
-2. [The analysis](https://meghnanatraj.github.io/apex-benchmark-analysis/analysis.html), the results. Which model does the job, what you can trust it with, and why the models fail.
+*[The analysis](https://meghnanatraj.github.io/apex-benchmark-analysis/analysis.html): which model does the job, what you can trust it with, and why the models fail.*
+
+[![The dataset, explained](docs/assets/explainer.png)](https://meghnanatraj.github.io/apex-benchmark-analysis/explainer.html)
+
+*[The dataset, explained](https://meghnanatraj.github.io/apex-benchmark-analysis/explainer.html): what the 300 tasks look like and how the 900 runs were graded, criterion by criterion.*
 
 ## Key findings
 
 - GPT-5.5 leads in every field. It met 64.9% of grading criteria overall, against 57.6% for Opus 4.7 and 43.2% for Qwen 3.6.
-- Counting only tasks passed cleanly (no failed criteria, no partial credit), GPT-5.5 passed 57% of Investment Banking tasks, 38% of Law tasks, and 57% of Consulting tasks.
-- Law is the hardest field for every model. All three fell to about a third of law tasks passed (GPT-5.5 38%, Qwen 34%, Opus 32%), and for Opus that is a steep drop from its 50% in Investment Banking and 48% in Consulting.
-- Qwen 3.6 passed at most 1 in 5 tasks outside Law (20% in Investment Banking, 17% in Consulting, 34% in Law).
+- Counting only tasks passed cleanly (no failed criteria, no partial credit), GPT-5.5 passed 57% of Investment Banking tasks, 57% of Consulting tasks, and 38% of Law tasks.
+- Law is the hardest field for every model. All three fell to about a third of law tasks passed (GPT-5.5 38%, Qwen 34%, Opus 32%).
+- Qwen 3.6 passed at most 1 in 5 tasks outside Law (20% in Investment Banking, 17% in Consulting).
 - Outside Law, which model you pick matters more than which kind of work you give it.
-- Of the 2,920 criteria verdicts, 1,311 failed and 19 were left ungraded. On 194 criteria, exactly one model succeeded where the other two failed. GPT-5.5 was that sole survivor 83 times, Opus 43, Qwen 38.
 
-## How the grading works
-
-Every task comes with a gold (correct) answer and 1 to 10 pass/fail grading criteria, 2,920 criteria verdicts in total. A model's answer is graded against each criterion separately, and each criterion either passes or fails. The task-level numbers use no partial credit: a task counts as passed only if it was graded and none of its criteria failed. A few runs (34 of the 900) produced nothing the graders could score, and those count as failures.
+Every task has a gold (correct) answer and 1 to 10 pass/fail grading criteria, 2,920 criteria verdicts in total. A task counts as passed only if it was graded and none of its criteria failed.
 
 ## Further reading
 
@@ -31,7 +31,7 @@ Every task comes with a gold (correct) answer and 1 to 10 pass/fail grading crit
 
 | Path | What it is |
 |---|---|
-| `index.html` | Landing page linking to the two pages below |
+| `index.html` | Landing page linking to the two pages above |
 | `explainer.html` | The dataset, explained |
 | `analysis.html` | The analysis of the results |
 | `docs/` | The deep-dive case study and the process notes |
