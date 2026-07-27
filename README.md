@@ -26,10 +26,13 @@ What the 300 tasks look like and how the 900 runs were graded, criterion by crit
 
 Every task has a gold (correct) answer and 1 to 10 pass/fail grading criteria, 2,920 criteria verdicts in total. A task counts as passed only if it was graded and none of its criteria failed.
 
-## Further reading
+## Case study: one model passed, two failed
 
-- [docs/deep-dive.md](docs/deep-dive.md), a case study of one task where one model passed and two failed, and why.
-- [docs/process.md](docs/process.md), how this analysis was produced.
+On 28 tasks, one model got everything right while the other two got everything wrong (GPT-5.5 on 17 of them, Qwen 6, Opus 5). The clearest case is a consulting task with 10 criteria where GPT-5.5 scored 10/10 and both others scored 0/10. The client folder held three sibling spreadsheets, two stale and one current. Opus and Qwen merged all three and got every number wrong despite correct math. GPT-5.5 treated picking the right file as part of the problem: it compared the candidates, noticed only the current file carried the client's own margin tabs, and answered from that file alone, matching the correct answer. The lesson: when two models fail the same task, the cause is usually a shared wrong judgment call made early, not weak math.
+
+## How this was made
+
+The 900 run transcripts were indexed into a results table, and the failures were studied rather than guessed at: a close read of a sample of failing runs produced a list of 11 failure types, then every one of the 1,311 failed criteria was sorted into a type with a quoted piece of evidence from its transcript. Those results became the analysis page, the explainer page was built to walk a newcomer through the dataset in under a minute, and every number on both pages was checked against the data before publishing.
 
 ## What's in this repository
 
@@ -38,7 +41,7 @@ Every task has a gold (correct) answer and 1 to 10 pass/fail grading criteria, 2
 | `index.html` | Landing page linking to the two pages above |
 | `explainer.html` | The dataset, explained |
 | `analysis.html` | The analysis of the results |
-| `docs/` | The deep-dive case study and the process notes |
+| `docs/assets/` | The screenshots used in this README |
 | `scripts/` | The scripts used to compute the numbers on the pages |
 | `data/index.jsonl` | The results table, one row per model run with its scores |
 
