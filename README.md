@@ -12,15 +12,15 @@ The pages are published at https://meghnanatraj.github.io/apex-benchmark-analysi
 ## Key findings
 
 - GPT-5.5 leads in every field. It met 64.9% of grading criteria overall, against 57.6% for Opus 4.7 and 43.2% for Qwen 3.6.
-- Counting only tasks passed cleanly (no failed criteria, no partial credit), GPT-5.5 passed 58% of Investment Banking tasks, 55% of Law tasks, and 58% of Consulting tasks.
-- Opus 4.7 falls hardest in Law. It passed only about a third of law tasks completely (32%), against 50% in Investment Banking and 48% in Consulting.
+- Counting only tasks passed cleanly (no failed criteria, no partial credit), GPT-5.5 passed 57% of Investment Banking tasks, 38% of Law tasks, and 57% of Consulting tasks.
+- Law is the hardest field for every model. All three fell to about a third of law tasks passed (GPT-5.5 38%, Qwen 34%, Opus 32%), and for Opus that is a steep drop from its 50% in Investment Banking and 48% in Consulting.
 - Qwen 3.6 passed at most 1 in 5 tasks outside Law (20% in Investment Banking, 17% in Consulting, 34% in Law).
-- Which model you pick matters more than which kind of work you give it.
+- Outside Law, which model you pick matters more than which kind of work you give it.
 - Of the 2,920 criteria verdicts, 1,311 failed and 19 were left ungraded. On 194 criteria, exactly one model succeeded where the other two failed. GPT-5.5 was that sole survivor 83 times, Opus 43, Qwen 38.
 
 ## How the grading works
 
-Every task comes with a gold (correct) answer and 1 to 10 pass/fail grading criteria, 2,920 criteria verdicts in total. A model's answer is graded against each criterion separately, and each criterion either passes or fails. The task-level numbers use no partial credit: a task counts as passed only if none of its criteria failed. The few criteria that could not be graded do not count against a model.
+Every task comes with a gold (correct) answer and 1 to 10 pass/fail grading criteria, 2,920 criteria verdicts in total. A model's answer is graded against each criterion separately, and each criterion either passes or fails. The task-level numbers use no partial credit: a task counts as passed only if it was graded and none of its criteria failed. A few runs (34 of the 900) produced nothing the graders could score, and those count as failures.
 
 ## Further reading
 

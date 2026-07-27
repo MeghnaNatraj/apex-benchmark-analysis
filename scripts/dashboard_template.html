@@ -245,7 +245,7 @@ $('kpis').innerHTML = M.map(m => {
     <div class="big">${pct(k.passrate)} <span class="ci">±${half.toFixed(1)} pts</span></div>
     <div class="cap">of ${DATA.n_crit[m].toLocaleString()} criteria met (95% CI)</div>
     <div class="rows">
-      <span>No failed criteria on <b>${k.perfect} of 300</b> tasks</span>
+      <span>Fully passed <b>${k.perfect} of 300</b> tasks</span>
     </div></div>`;
 }).join('');
 
@@ -265,12 +265,12 @@ M.forEach(m => {
     const ink = t > 0.55 ? '#fff' : '#0b0b0b';
     const win = v === domBest[d] ? ' win' : '';
     const half = ciHalf(v, domN[d]);
-    hmHtml += `<div class="cell${win}" style="background:${seqColor(v)};color:${ink}" data-tip="<b>${MSHORT[m]} · ${d}</b><br>${pct(v)} of ${domN[d]} tasks passed (no criterion failed)<br>95% CI: ±${half.toFixed(0)} pts${win ? '<br>Best model in this field' : ''}">${pct(v)}</div>`;
+    hmHtml += `<div class="cell${win}" style="background:${seqColor(v)};color:${ink}" data-tip="<b>${MSHORT[m]} · ${d}</b><br>${pct(v)} of ${domN[d]} tasks fully passed<br>95% CI: ±${half.toFixed(0)} pts${win ? '<br>Best model in this field' : ''}">${pct(v)}</div>`;
   });
 });
 $('heatmap').innerHTML = hmHtml;
 $('ramp').innerHTML = seq.map(s => `<i style="background:var(${s})"></i>`).join('');
-$('tk-heat').innerHTML = `<b>Share of tasks with no failed criteria, no partial credit.</b> GPT-5.5 leads in every field; Opus drops to a third on law; Qwen clears at most one task in five outside law. Model choice matters more than the kind of work.`;
+$('tk-heat').innerHTML = `<b>Share of tasks fully passed, no partial credit.</b> GPT-5.5 leads in every field. Law is the hard field: all three models drop to about a third. Outside law, model choice is decisive; Qwen clears at most one task in five.`;
 
 /* task matrix */
 let mtxHtml = '';
