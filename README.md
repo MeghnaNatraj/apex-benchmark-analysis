@@ -31,9 +31,9 @@ Which model does the job, what you can trust it with, and why the models fail.
 
 ## How this was made
 
-1. **Indexed** all 900 transcripts into a results table.
+1. **Indexed** all 900 traces into a results table.
 2. **Read the failures, rather than guessing** — a close look at a sample of failing runs produced 11 failure types.
-3. **Classified every failure** — all 1,311 failed criteria were sorted into a type, each backed by a quote from its transcript as evidence.
+3. **Classified every failure** — all 1,311 failed criteria were sorted into a type, each backed by a quote from its trace as evidence.
 4. **Verified the numbers** — every figure on both pages was checked against the data before publishing.
 
 ## What's in this repository
@@ -47,7 +47,7 @@ Which model does the job, what you can trust it with, and why the models fail.
 | `scripts/` | The code that builds the pages |
 | `docs/assets/` | The screenshots above |
 
-The 900 transcripts themselves are not included here, only the results computed from them.
+The 900 traces themselves are not included here, only the results computed from them.
 
 ## Reproducing the pages
 
