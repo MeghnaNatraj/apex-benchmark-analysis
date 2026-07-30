@@ -50,4 +50,14 @@ The 900 run transcripts were indexed into a results table, and the failures were
 | `scripts/build.py` | Rebuilds `analysis.html`. Run `python3 scripts/build.py` from the repository root |
 | `scripts/preprocess.py`, `scripts/build_dashboard.py` | The earlier failure-analysis pipeline, kept as a record of method. These read the full transcripts and the intermediate files they produced, neither of which is in this repository, so they will not run here |
 
-The full run transcripts are not included in this repository, only the results computed from them. `analysis.html` is fully reproducible from what is here: `python3 scripts/build.py` regenerates it byte-for-byte from `scripts/data.json` and `data/index.jsonl`. The step counts in the "Does working longer help?" chart were measured on the transcripts and are stored in `data.json` as measured.
+## Reproducing the pages
+
+`analysis.html` rebuilds byte-for-byte from what is in this repository:
+
+```
+python3 scripts/build.py
+```
+
+That recomputes the criterion pass rates and confidence-interval counts from `data/index.jsonl` and re-injects everything into the template.
+
+The 900 run transcripts themselves are not here, and are no longer retained anywhere. Anything measured directly on them is therefore frozen as stored in `scripts/data.json` and cannot be re-derived: the failure-type classifications, the quoted evidence, the per-run step counts behind the "Does working longer help?" chart, and the document-overlap figures. The results table in `data/index.jsonl` is the durable record, and every headline figure on the pages is recomputable from it.
