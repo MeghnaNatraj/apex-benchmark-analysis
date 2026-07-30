@@ -18,46 +18,43 @@ Which model does the job, what you can trust it with, and why the models fail.
 
 ## Key findings
 
-- GPT-5.5 leads in every field. It met 64.9% of grading criteria overall, against 57.6% for Opus 4.7 and 43.2% for Qwen 3.6.
-- Counting only tasks passed cleanly (no failed criteria, no partial credit), GPT-5.5 passed 57% of Investment Banking tasks, 57% of Consulting tasks, and 38% of Law tasks.
-- Law is the hardest field for every model. All three fell to about a third of law tasks passed (GPT-5.5 38%, Qwen 34%, Opus 32%).
-- Qwen 3.6 passed at most 1 in 5 tasks outside Law (20% in Investment Banking, 17% in Consulting).
-- Outside Law, which model you pick matters more than which kind of work you give it.
+GPT-5.5 leads in every field. It met 64.9% of the grading criteria, against 57.6% for Opus 4.7 and 43.2% for Qwen 3.6.
 
-Every task has a gold (correct) answer and 1 to 10 pass/fail grading criteria, 2,920 criteria verdicts in total. A task counts as passed only if it was graded and none of its criteria failed.
+Law is the hardest work for all three, and it is where they come closest together: every model passed only about a third of law tasks. Outside law they separate sharply. GPT-5.5 passed 57% of both banking and consulting tasks while Qwen passed 20% and 17%. Which model you pick matters more than what kind of work you hand it.
 
-**Read with care:** these 300 tasks are a hand-picked slice of the Apex benchmark, deliberately weighted toward tasks where the three models disagree, so the gaps between models are wider here than they would be on a random draw. The numbers compare the three models to each other; they are not official benchmark scores.
+A task counts as passed only if it was graded and no criterion failed, so there is no partial credit.
 
-## Case study: one model passed, two failed
+**Read with care:** these 300 tasks were hand-picked to favor cases where the models disagree, so the gaps are wider here than they would be on a random draw. The numbers compare the three models to each other and are not official benchmark scores.
 
-On 28 tasks, one model got everything right while the other two got everything wrong (GPT-5.5 on 17 of them, Qwen 6, Opus 5). The clearest case is a consulting task with 10 criteria where GPT-5.5 scored 10/10 and both others scored 0/10. The client folder held three sibling spreadsheets, two stale and one current. Opus and Qwen merged all three and got every number wrong despite correct math. GPT-5.5 treated picking the right file as part of the problem: it compared the candidates, noticed only the current file carried the client's own margin tabs, and answered from that file alone, matching the correct answer. The lesson: when two models fail the same task, the cause is usually a shared wrong judgment call made early, not weak math.
+## One model passed, two failed
+
+On 28 tasks a single model got everything right while the other two got everything wrong. The clearest case is a consulting task where GPT-5.5 scored 10 out of 10 and both others scored 0.
+
+The client folder held three sibling spreadsheets, two stale and one current. Opus and Qwen merged all three and got every number wrong despite doing the math correctly. GPT-5.5 treated picking the right file as part of the problem, noticed that only the current one carried the client's own margin tabs, and answered from that file alone.
+
+When two models fail the same task, the cause is usually a single wrong judgment made early, not weak math.
 
 ## How this was made
 
-The 900 run transcripts were indexed into a results table, and the failures were studied rather than guessed at: a close read of a sample of failing runs produced a list of 11 failure types, then every one of the 1,311 failed criteria was sorted into a type with a quoted piece of evidence from its transcript. Those results became the analysis page, the explainer page was built to walk a newcomer through the dataset in under a minute, and every number on both pages was checked against the data before publishing.
+All 900 transcripts were indexed into a results table. The failures were then read rather than guessed at: a close look at a sample of failing runs produced 11 failure types, and every one of the 1,311 failed criteria was sorted into a type with a quote from its transcript as evidence. Every number on both pages was checked against the data before publishing.
 
 ## What's in this repository
 
 | Path | What it is |
 |---|---|
-| `index.html` | Landing page linking to the two pages above |
+| `index.html` | The landing page |
 | `explainer.html` | The dataset, explained |
-| `analysis.html` | The analysis of the results |
-| `docs/assets/` | The screenshots used in this README |
-| `data/index.jsonl` | The results table, one row per model run with its scores |
-| `scripts/data.json` | Every number, task prompt, and criterion verdict the pages display |
-| `scripts/dashboard_template.html` | The page shell that `data.json` is injected into |
-| `scripts/build.py` | Rebuilds `analysis.html`. Run `python3 scripts/build.py` from the repository root |
-| `scripts/preprocess.py`, `scripts/build_dashboard.py` | The earlier failure-analysis pipeline, kept as a record of method. These read the full transcripts and the intermediate files they produced, neither of which is in this repository, so they will not run here |
+| `analysis.html` | The analysis |
+| `data/index.jsonl` | Every run and its score, one row each |
+| `scripts/` | The code that builds the pages |
+| `docs/assets/` | The screenshots above |
+
+The 900 transcripts themselves are not included here, only the results computed from them.
 
 ## Reproducing the pages
 
-`analysis.html` rebuilds byte-for-byte from what is in this repository:
+Just run:
 
 ```
 python3 scripts/build.py
 ```
-
-That recomputes the criterion pass rates and confidence-interval counts from `data/index.jsonl` and re-injects everything into the template.
-
-The 900 run transcripts themselves are not here, and are no longer retained anywhere. Anything measured directly on them is therefore frozen as stored in `scripts/data.json` and cannot be re-derived: the failure-type classifications, the quoted evidence, the per-run step counts behind the "Does working longer help?" chart, and the document-overlap figures. The results table in `data/index.jsonl` is the durable record, and every headline figure on the pages is recomputable from it.
