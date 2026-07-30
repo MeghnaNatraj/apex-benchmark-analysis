@@ -22,16 +22,12 @@ Which model does the job, what you can trust it with, and why the models fail.
 2. **Law is hardest for all three, and where they're closest** — each model passes only about a third of law tasks.
 3. **Outside law, the gap widens sharply** — GPT-5.5 passes 57% of both banking and consulting tasks, vs. 20% and 17% for Qwen.
 4. **Model choice matters more than task type.**
-5. **No partial credit** — a task counts as passed only if it was graded and every criterion passed.
+5. **One model passed, two failed** — on 28 tasks, one model got everything right while the other two got everything wrong.
+   - **Clearest case** — a consulting task where GPT-5.5 scored 10/10 and both others scored 0/10.
+   - **What happened** — the client folder held three sibling spreadsheets, two stale and one current. Opus and Qwen merged all three and got every number wrong despite doing the math correctly. GPT-5.5 treated picking the right file as part of the problem, noticed only the current one carried the client's own margin tabs, and answered from that file alone.
+   - **The pattern** — when two models fail the same task, the cause is usually one wrong judgment made early, not weak math.
 
 **Read with care:** these 300 tasks were hand-picked to favor cases where the models disagree, so the gaps are wider here than they would be on a random draw. The numbers compare the three models to each other and are not official benchmark scores.
-
-## One model passed, two failed
-
-1. **28 tasks** had one model get everything right while the other two got everything wrong.
-2. **Clearest case** — a consulting task where GPT-5.5 scored 10/10 and both others scored 0/10.
-3. **What happened** — the client folder held three sibling spreadsheets, two stale and one current. Opus and Qwen merged all three and got every number wrong despite doing the math correctly. GPT-5.5 treated picking the right file as part of the problem, noticed only the current one carried the client's own margin tabs, and answered from that file alone.
-4. **The pattern** — when two models fail the same task, the cause is usually one wrong judgment made early, not weak math.
 
 ## How this was made
 
