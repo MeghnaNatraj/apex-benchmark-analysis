@@ -2,15 +2,15 @@
 
 How well three AI models (GPT-5.5, Claude Opus 4.7, and Qwen 3.6) do white-collar work across 300 real tasks in Law, Investment Banking, and Management Consulting.
 
-## → [View The Live Report](https://meghnanatraj.github.io/apex-benchmark-analysis/)
+## 🔗 [View The Live Report](https://meghnanatraj.github.io/apex-benchmark-analysis/)
 
-### → [The Dataset](https://meghnanatraj.github.io/apex-benchmark-analysis/explainer.html)
+### 🔗 [The Dataset](https://meghnanatraj.github.io/apex-benchmark-analysis/explainer.html)
 
 What the 300 tasks look like and how the 900 runs were graded, criterion by criterion.
 
 [![The dataset](docs/assets/explainer.png)](https://meghnanatraj.github.io/apex-benchmark-analysis/explainer.html)
 
-### → [The Analysis](https://meghnanatraj.github.io/apex-benchmark-analysis/analysis.html)
+### 🔗 [The Analysis](https://meghnanatraj.github.io/apex-benchmark-analysis/analysis.html)
 
 Which model does the job, what you can trust it with, and why the models fail.
 
