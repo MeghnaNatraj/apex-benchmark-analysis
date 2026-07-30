@@ -41,7 +41,7 @@ Which model does the job, what you can trust it with, and why the models fail.
 | Path | What it is |
 |---|---|
 | `index.html` | The landing page |
-| `explainer.html` | The dataset, explained |
+| `explainer.html` | The dataset |
 | `analysis.html` | The analysis |
 | `data/index.jsonl` | Every run and its score, one row each |
 | `scripts/` | The code that builds the pages |
