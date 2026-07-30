@@ -18,25 +18,27 @@ Which model does the job, what you can trust it with, and why the models fail.
 
 ## Key findings
 
-GPT-5.5 leads in every field. It met 64.9% of the grading criteria, against 57.6% for Opus 4.7 and 43.2% for Qwen 3.6.
-
-Law is the hardest work for all three, and it is where they come closest together: every model passed only about a third of law tasks. Outside law they separate sharply. GPT-5.5 passed 57% of both banking and consulting tasks while Qwen passed 20% and 17%. Which model you pick matters more than what kind of work you hand it.
-
-A task counts as passed only if it was graded and no criterion failed, so there is no partial credit.
+1. **GPT-5.5 leads in every field** — 64.9% of grading criteria met, vs. 57.6% (Opus 4.7) and 43.2% (Qwen 3.6).
+2. **Law is hardest for all three, and where they're closest** — each model passes only about a third of law tasks.
+3. **Outside law, the gap widens sharply** — GPT-5.5 passes 57% of both banking and consulting tasks, vs. 20% and 17% for Qwen.
+4. **Model choice matters more than task type.**
+5. **No partial credit** — a task counts as passed only if it was graded and every criterion passed.
 
 **Read with care:** these 300 tasks were hand-picked to favor cases where the models disagree, so the gaps are wider here than they would be on a random draw. The numbers compare the three models to each other and are not official benchmark scores.
 
 ## One model passed, two failed
 
-On 28 tasks a single model got everything right while the other two got everything wrong. The clearest case is a consulting task where GPT-5.5 scored 10 out of 10 and both others scored 0.
-
-The client folder held three sibling spreadsheets, two stale and one current. Opus and Qwen merged all three and got every number wrong despite doing the math correctly. GPT-5.5 treated picking the right file as part of the problem, noticed that only the current one carried the client's own margin tabs, and answered from that file alone.
-
-When two models fail the same task, the cause is usually a single wrong judgment made early, not weak math.
+1. **28 tasks** had one model get everything right while the other two got everything wrong.
+2. **Clearest case** — a consulting task where GPT-5.5 scored 10/10 and both others scored 0/10.
+3. **What happened** — the client folder held three sibling spreadsheets, two stale and one current. Opus and Qwen merged all three and got every number wrong despite doing the math correctly. GPT-5.5 treated picking the right file as part of the problem, noticed only the current one carried the client's own margin tabs, and answered from that file alone.
+4. **The pattern** — when two models fail the same task, the cause is usually one wrong judgment made early, not weak math.
 
 ## How this was made
 
-All 900 transcripts were indexed into a results table. The failures were then read rather than guessed at: a close look at a sample of failing runs produced 11 failure types, and every one of the 1,311 failed criteria was sorted into a type with a quote from its transcript as evidence. Every number on both pages was checked against the data before publishing.
+1. Indexed all 900 transcripts into a results table.
+2. Read the failures rather than guessing: a close look at a sample of failing runs produced 11 failure types.
+3. Sorted every one of the 1,311 failed criteria into a type, each backed by a quote from its transcript as evidence.
+4. Checked every number on both pages against the data before publishing.
 
 ## What's in this repository
 
