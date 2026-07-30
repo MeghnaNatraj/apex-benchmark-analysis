@@ -31,10 +31,10 @@ Which model does the job, what you can trust it with, and why the models fail.
 
 ## How this was made
 
-1. Indexed all 900 transcripts into a results table.
-2. Read the failures rather than guessing: a close look at a sample of failing runs produced 11 failure types.
-3. Sorted every one of the 1,311 failed criteria into a type, each backed by a quote from its transcript as evidence.
-4. Checked every number on both pages against the data before publishing.
+1. **Indexed** all 900 transcripts into a results table.
+2. **Read the failures, rather than guessing** — a close look at a sample of failing runs produced 11 failure types.
+3. **Classified every failure** — all 1,311 failed criteria were sorted into a type, each backed by a quote from its transcript as evidence.
+4. **Verified the numbers** — every figure on both pages was checked against the data before publishing.
 
 ## What's in this repository
 
