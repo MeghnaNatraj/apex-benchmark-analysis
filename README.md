@@ -43,15 +43,11 @@ Which model does the job, what you can trust it with, and why the models fail.
 | `index.html` | The landing page |
 | `explainer.html` | The dataset |
 | `analysis.html` | The analysis |
-| `data/index.jsonl` | Every run and its score, one row each |
-| `scripts/` | The code that builds the pages |
-| `docs/assets/` | The screenshots above |
-
-The 900 traces themselves are not included here, only the results computed from them.
+| `data/index.jsonl` | One row per model run on a task (900 rows total) - task ID and name, domain, model, score, and criteria passed/failed counts |
+| `scripts/` | Builds the site: turns the traces and `index.jsonl` into `data.json`, then renders `explainer.html` and `analysis.html` from it |
+| `docs/assets/` | Screenshots of the pages, used above and on the live site |
 
 ## Reproducing the pages
-
-Just run:
 
 ```
 python3 scripts/build.py
