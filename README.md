@@ -6,7 +6,7 @@ How well three AI models (GPT-5.5, Claude Opus 4.7, and Qwen 3.6) do white-colla
 
 ### 🔗 [The Dataset](https://meghnanatraj.github.io/apex-benchmark-analysis/explainer.html)
 
-What the 300 tasks look like and how the 900 runs were graded, criterion by criterion.
+What the 300 tasks look like and how the 900 runs were graded, criterion by criterion. Raw data: [`data/index.jsonl`](data/index.jsonl).
 
 [![The dataset](docs/assets/explainer.png)](https://meghnanatraj.github.io/apex-benchmark-analysis/explainer.html)
 
